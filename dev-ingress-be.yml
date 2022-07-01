@@ -1,0 +1,33 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: dev-mc-be
+spec:
+  domains:
+  - api.ganapathi.xyz
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dev-be-ingress
+  annotations:
+    #kubernetes.io/ingress.global-static-ip-name: nginx-example
+    #kubernetes.io/ingress.allow-http: "false"
+    networking.gke.io/managed-certificates: dev-mc-be
+spec:
+  defaultBackend:
+    service:
+      name: nodejs-be-service
+      port:
+        number: 80
+  rules:
+  - http:
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: nodejs-be-service
+              port:
+                number: 80 
+---
